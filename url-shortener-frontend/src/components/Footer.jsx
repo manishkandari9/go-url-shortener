@@ -1,3 +1,4 @@
+// components/Footer.jsx
 import { motion } from 'framer-motion'
 
 export default function Footer() {
@@ -14,4 +15,3 @@ export default function Footer() {
     </motion.footer>
   )
 }
-
