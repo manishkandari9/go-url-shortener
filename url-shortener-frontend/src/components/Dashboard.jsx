@@ -201,13 +201,11 @@ const Dashboard = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Share2 className="h-5 w-5 text-blue-500 dark:text-blue-400" />
-                  Branded URLs
+                  <Share2 className="h-2 w-5 text-blue-500 dark:text-blue-400" />
+                  <BrandedURLs/>
                 </CardTitle>
-                <CardDescription>Create custom branded domains</CardDescription>
               </CardHeader>
               <CardContent>
-                <Stat label="Custom domains active" value="89" />
               </CardContent>
             </Card>
 
@@ -236,6 +234,23 @@ const Dashboard = () => {
                 <div className="grid gap-4 md:grid-cols-2">
                   <Stat label="API Requests" value="1.2M" subtext="This month" />
                   <Stat label="Active API Keys" value="156" subtext="Across all users" />
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="col-span-full lg:col-span-2">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Code2 className="h-5 w-5 text-blue-500 dark:text-blue-400" />
+                  password
+                </CardTitle>
+                <CardDescription>Password </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <CustomRedirect/>
+                 
+                  {/* <Stat label="API Requests" value="1.2M" subtext="This month" />
+                  <Stat label="Active API Keys" value="156" subtext="Across all users" /> */}
                 </div>
               </CardContent>
             </Card>

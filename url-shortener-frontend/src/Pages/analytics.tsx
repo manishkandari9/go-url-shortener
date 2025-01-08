@@ -2,8 +2,7 @@
 import React from "react"
 const analyticsData = [
     { url: 'http://short.ly/abc123', clicks: 100, topLocation: 'USA' },
-    { url: 'http://short.ly/def456', clicks: 75, topLocation: 'India' },
-    { url: 'http://short.ly/ghi789', clicks: 50, topLocation: 'UK' },
+  
   ]
   
   export default function Analytics() {
