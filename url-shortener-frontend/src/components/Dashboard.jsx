@@ -201,11 +201,13 @@ const Dashboard = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Share2 className="h-2 w-5 text-blue-500 dark:text-blue-400" />
-                  <BrandedURLs/>
+                  <Share2 className="h-5 w-5 text-blue-500 dark:text-blue-400" />
+                   <BrandedURLs/>
                 </CardTitle>
+                {/* <CardDescription>Create custom branded domains</CardDescription> */}
               </CardHeader>
               <CardContent>
+                {/* <Stat label="Custom domains active" value="89" /> */}
               </CardContent>
             </Card>
 
