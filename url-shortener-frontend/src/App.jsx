@@ -29,16 +29,16 @@ function App() {
             <Route path='/navabr' element={<Navbar/>}/>
             <Route path="/urlshortener" element={<UrlShortener />} />
             <Route path="/analytics" element={<Analytics />} />
-            <Route path="/apidocs" element={<APIDocs />} />
+            <Route path="/api-docs" element={<APIDocs />} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/brandedurls" element={<BrandedURLs />} />
-            <Route path="/bulkshortening" element={<BulkShortening />} />
-            <Route path="/customredirect" element={<CustomRedirect />} />
-            <Route path="/customshorturls" element={<CustomShortURLs />} />
-            <Route path="/passwordprotection" element={<PasswordProtection />} />
-            <Route path="/qrcode" element={<QRCode />} />
-            <Route path="/urlexpiry" element={<URLExpiry />} />
-            <Route path="/urlhistory" element={<URLHistory />} />
+            <Route path="/branded-urls" element={<BrandedURLs />} />
+            <Route path="/bulk-shortening" element={<BulkShortening />} />
+            <Route path="/custom-redirect" element={<CustomRedirect />} />
+            <Route path="/custom-short-urls" element={<CustomShortURLs />} />
+            <Route path="/password-protection" element={<PasswordProtection />} />
+            <Route path="/qr-code" element={<QRCode />} />
+            <Route path="/url-expiry" element={<URLExpiry />} />
+            <Route path="/url-history" element={<URLHistory />} />
           </Routes>
         </div>
       </Router>

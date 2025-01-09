@@ -2,26 +2,23 @@ import React from 'react'
 import { BarChart3, Calendar, Code2, Fingerprint, History, Link2, QrCode, Settings, Share2, Shield, Upload, Users } from 'lucide-react'
 import { UrlShortener } from './UrlShortener'
 import Navbar from './navbar'
-import Analytics from '../Pages/analytics'
-import APIDocs from '../Pages/api-docs'
-import Auth from '../Pages/auth'
-import BrandedURLs from '../Pages/branded-urls'
-import BulkShortening from '../Pages/bulk-shortening'
-import CustomRedirect from '../Pages/custom-redirect'
-import CustomShortURLs from '../Pages/custom-short-urls'
-import PasswordProtection from '../Pages/password-protection'
-import QRCode from '../Pages/qr-code'
-import URLExpiry from '../Pages/url-expiry'
-import URLHistory from '../Pages/url-history'
+import { useNavigate } from 'react-router-dom'
+
 
 
 const Dashboard = () => {
-  const Card = ({ children, className }) => (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 ${className}`}>
+  const navigate = useNavigate()
+
+  const Card = ({ children, className, onClick }) => (
+    <div
+      className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 ${className} ${
+        onClick ? 'cursor-pointer' : ''
+      }`}
+      onClick={onClick}
+    >
       {children}
     </div>
   )
-
   const CardHeader = ({ children }) => (
     <div className="p-4 border-b border-gray-200 dark:border-gray-700">
       {children}
@@ -87,7 +84,7 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card onClick={() => navigate('/custom-short-urls')}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Link2 className="h-5 w-5 text-blue-500 dark:text-blue-400" />
@@ -103,7 +100,7 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card onClick={() => navigate('/analytics')}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <BarChart3 className="h-5 w-5 text-blue-500 dark:text-blue-400" />
@@ -120,7 +117,7 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card onClick={() => navigate('/url-expiry')}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Calendar className="h-5 w-5 text-blue-500 dark:text-blue-400" />
@@ -133,7 +130,7 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card onClick={() => navigate('/password-protection')}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Shield className="h-5 w-5 text-blue-500 dark:text-blue-400" />
@@ -146,7 +143,7 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card onClick={() => navigate('/auth')}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Fingerprint className="h-5 w-5 text-blue-500 dark:text-blue-400" />
@@ -159,20 +156,21 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Upload className="h-5 w-5 text-blue-500 dark:text-blue-400" />
-                  Bulk Shortening
-                </CardTitle>
-                <CardDescription>Shorten multiple URLs at once</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Stat label="Bulk links created" value="5,678" />
-              </CardContent>
-            </Card>
+          
+            <Card onClick={() => navigate('/bulk-shortening')}>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Upload className="h-5 w-5 text-blue-500 dark:text-blue-400" />
+          <span>Bulk Shortening</span>
+        </CardTitle>
+        <CardDescription>Shorten multiple URLs at once</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Stat label="Bulk links created" value="5,678" />
+      </CardContent>
+    </Card>
 
-            <Card>
+    <Card onClick={() => navigate('/qr-code')}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <QrCode className="h-5 w-5 text-blue-500 dark:text-blue-400" />
@@ -185,7 +183,7 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card onClick={() => navigate('/url-history')}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <History className="h-5 w-5 text-blue-500 dark:text-blue-400" />
@@ -198,20 +196,20 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card onClick={() => navigate('/branded-urls')}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Share2 className="h-5 w-5 text-blue-500 dark:text-blue-400" />
-                   <BrandedURLs/>
+                   Branded URL
                 </CardTitle>
-                {/* <CardDescription>Create custom branded domains</CardDescription> */}
+                <CardDescription>Create custom branded domains</CardDescription>
               </CardHeader>
               <CardContent>
-                {/* <Stat label="Custom domains active" value="89" /> */}
+                <Stat label="Custom domains active" value="89" />
               </CardContent>
             </Card>
 
-            <Card>
+            <Card onClick={() => navigate('/custom-redirect')}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Settings className="h-5 w-5 text-blue-500 dark:text-blue-400" />
@@ -224,7 +222,7 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            <Card className="col-span-full lg:col-span-2">
+            <Card onClick={() => navigate('/api-docs')} className="col-span-full lg:col-span-2">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Code2 className="h-5 w-5 text-blue-500 dark:text-blue-400" />
@@ -236,23 +234,6 @@ const Dashboard = () => {
                 <div className="grid gap-4 md:grid-cols-2">
                   <Stat label="API Requests" value="1.2M" subtext="This month" />
                   <Stat label="Active API Keys" value="156" subtext="Across all users" />
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="col-span-full lg:col-span-2">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Code2 className="h-5 w-5 text-blue-500 dark:text-blue-400" />
-                  password
-                </CardTitle>
-                <CardDescription>Password </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <CustomRedirect/>
-                 
-                  {/* <Stat label="API Requests" value="1.2M" subtext="This month" />
-                  <Stat label="Active API Keys" value="156" subtext="Across all users" /> */}
                 </div>
               </CardContent>
             </Card>
