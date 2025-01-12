@@ -1,31 +1,43 @@
-
-import React, { useState } from 'react'
-import axios from 'axios'
+import React, { useState } from 'react';
+import axios from 'axios';
 
 export const UrlShortener = () => {
-  const [url, setUrl] = useState('')
-  const [shortUrl, setShortUrl] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [url, setUrl] = useState('');
+  const [shortUrl, setShortUrl] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError('')
-    setShortUrl('')
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+    setShortUrl('');
 
     try {
-      const response = await axios.post('/api/shorten', { url })
-      setShortUrl(response.data.shortUrl)
-    } catch (err) {
-      setError('Failed to shorten URL. Please try again.')
-      console.error('Error shortening URL:', err)
-    } finally {
-      setIsLoading(false)
-    }
-  }
+      // Sending the URL to the Go backend for shortening
+      const response = await axios.post('http://localhost:5373/api/shorten', { url });
 
-  const Input = ({ id, type, placeholder, value, onChange, required, className }: {
+      // Storing the shortened URL from the response
+      setShortUrl(response.data.shortUrl);
+    } catch (err) {
+      setError('Failed to shorten URL. Please try again.');
+      console.error('Error shortening URL:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Input Component
+  const Input = ({
+    id,
+    type,
+    placeholder,
+    value,
+    onChange,
+    required,
+    className,
+  }: {
     id: string;
     type: string;
     placeholder: string;
@@ -43,9 +55,14 @@ export const UrlShortener = () => {
       required={required}
       className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`}
     />
-  )
+  );
 
-  const Label = ({ htmlFor, children, className }: {
+  // Label Component
+  const Label = ({
+    htmlFor,
+    children,
+    className,
+  }: {
     htmlFor: string;
     children: React.ReactNode;
     className: string;
@@ -53,9 +70,15 @@ export const UrlShortener = () => {
     <label htmlFor={htmlFor} className={`block text-sm font-medium ${className}`}>
       {children}
     </label>
-  )
+  );
 
-  const Button = ({ type, children, className, disabled }: {
+  // Button Component
+  const Button = ({
+    type,
+    children,
+    className,
+    disabled,
+  }: {
     type: 'submit' | 'button';
     children: React.ReactNode;
     className: string;
@@ -70,7 +93,7 @@ export const UrlShortener = () => {
     >
       {children}
     </button>
-  )
+  );
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -88,8 +111,8 @@ export const UrlShortener = () => {
           className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
         />
       </div>
-      <Button 
-        type="submit" 
+      <Button
+        type="submit"
         className="w-full bg-blue-500 text-white dark:bg-blue-400 dark:text-gray-900 hover:bg-blue-600 dark:hover:bg-blue-500"
         disabled={isLoading}
       >
@@ -103,12 +126,16 @@ export const UrlShortener = () => {
       {shortUrl && (
         <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
           <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Your shortened URL:</p>
-          <a href={shortUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 dark:text-blue-400 hover:underline">
+          <a
+            href={shortUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 dark:text-blue-400 hover:underline"
+          >
             {shortUrl}
           </a>
         </div>
       )}
     </form>
-  )
-}
-
+  );
+};
