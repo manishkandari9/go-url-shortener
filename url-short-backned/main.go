@@ -29,7 +29,6 @@ func main() {
 		fmt.Fprintf(w, "Connected to MongoDB successfully!")
 	})
 
-
 	// Apply CORS middleware to the server
 	log.Println("Server is running on port 8080...")
 	log.Fatal(http.ListenAndServe(":8080", corsHandler.Handler(http.DefaultServeMux)))
