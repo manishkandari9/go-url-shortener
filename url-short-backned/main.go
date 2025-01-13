@@ -11,11 +11,11 @@ import (
 
 func main() {
 	// Initialize MongoDB client
-	err := database.InitMongoClient()
+	err := config.InitMongoClient()
 	if err != nil {
 		log.Fatalf("Error initializing MongoDB: %v", err)
 	}
-	defer database.CloseMongoClient()
+	defer config.CloseMongoClient()
 
 	// Set up CORS middleware with allowed origins
 	corsHandler := cors.New(cors.Options{
