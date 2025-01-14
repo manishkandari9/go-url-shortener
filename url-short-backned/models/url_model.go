@@ -1,11 +1,11 @@
 package models
 
-// ShortenRequest is the request format for shortening the URL
+// ShortenRequest represents the structure of the incoming request (long URL).
 type ShortenRequest struct {
     URL string `json:"url"`
 }
 
-// ShortenResponse is the response format for the shortened URL
+// ShortenResponse represents the structure of the outgoing response (short URL).
 type ShortenResponse struct {
     ShortUrl string `json:"shortUrl"`
 }
