@@ -1,4 +1,4 @@
-module urlshortener
+module url-short-backned
 
 go 1.23.4
 

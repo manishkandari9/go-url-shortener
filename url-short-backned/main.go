@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"url-shortener/config"
+	"url-short-backned/config"
 
 	"github.com/rs/cors" // Importing the CORS package
 )
@@ -19,7 +19,7 @@ func main() {
 
 	// Set up CORS middleware with allowed origins
 	corsHandler := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:3000"}, // React app URL
+		AllowedOrigins: []string{"http://localhost:5373"}, // React app URL
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"}, // Allowed HTTP methods
 		AllowedHeaders: []string{"Content-Type"}, // Allowed headers
 	})
