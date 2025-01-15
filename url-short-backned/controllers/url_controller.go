@@ -3,29 +3,37 @@ package controllers
 import (
 	"encoding/json"
 	"net/http"
-	"url-short-backned/models" // Importing the models package
-	"url-short-backned/services" // Importing the services package
+	"url-short-backned/models"
+	"url-short-backned/utils"
 )
 
-// ShortenURL handles the URL shortening request
 func ShortenURL(w http.ResponseWriter, r *http.Request) {
-	var req models.ShortenRequest
-
-	// Decode the request body
-	err := json.NewDecoder(r.Body).Decode(&req)
-	if err != nil || req.URL == "" {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
-		return
-	}
-
-	// Call the service to shorten the URL
-	shortUrl, err := services.GenerateShortURL(req.URL)
-	if err != nil {
-		http.Error(w, "Failed to shorten URL", http.StatusInternalServerError)
-		return
-	}
-
-	// Send the response
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(models.ShortenResponse{ShortUrl: shortUrl})
+
+	var requestData map[string]string
+	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil || requestData["url"] == "" {
+		http.Error(w, `{"error":"Invalid request body"}`, http.StatusBadRequest)
+		return
+	}
+
+	originalURL := requestData["url"]
+	shortURL := utils.GenerateShortURL()
+
+	if err := models.SaveURL(shortURL, originalURL); err != nil {
+		http.Error(w, `{"error":"Failed to save URL"}`, http.StatusInternalServerError)
+		return
+	}
+
+	responseData := map[string]string{"shortUrl": "http://localhost:8080/" + shortURL}
+	json.NewEncoder(w).Encode(responseData)
+}
+
+func RedirectURL(w http.ResponseWriter, r *http.Request) {
+	shortURL := r.URL.Path[1:]
+	originalURL, exists := models.GetURL(shortURL)
+	if !exists {
+		http.Error(w, "URL not found", http.StatusNotFound)
+		return
+	}
+	http.Redirect(w, r, originalURL, http.StatusFound)
 }

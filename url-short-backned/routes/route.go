@@ -1,12 +1,16 @@
 package routes
 
 import (
-    "net/http"
-    "url-short-backned/controllers"  // Import the controller
-    "github.com/gorilla/mux"
+	"url-short-backned/controllers"
+	"github.com/gorilla/mux"
 )
 
-// RegisterRoutes sets up the routes for the URL shortener.
-func RegisterRoutes(r *mux.Router) {
-    r.HandleFunc("/api/shorten", controllers.ShortenURL).Methods(http.MethodPost) // POST /api/shorten
+func SetupRoutes() *mux.Router {
+	router := mux.NewRouter()
+
+	// Register routes
+	router.HandleFunc("/api/shorten", controllers.ShortenURL).Methods("POST")
+	router.HandleFunc("/{shortURL}", controllers.RedirectURL).Methods("GET")
+
+	return router
 }

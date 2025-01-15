@@ -39,7 +39,7 @@ func InitMongoClient() error {
 
 	// Set client options
 	clientOptions := options.Client().ApplyURI(mongoURI).
-	SetConnectTimeout(30 * time.Second)
+	SetConnectTimeout(60 * time.Second)
 
 	// Connect to MongoDB
 	client, err := mongo.Connect(context.Background(), clientOptions)
