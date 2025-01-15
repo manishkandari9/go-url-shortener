@@ -83,7 +83,8 @@ export const UrlShortener = () => {
     }
   };
 
-  const copyToClipboard = async () => {
+  const copyToClipboard = async (e) => {
+    e.preventDefault(); // Prevent the form submission when copying
     try {
       await navigator.clipboard.writeText(shortUrl);
       setIsCopied(true);
@@ -142,6 +143,7 @@ export const UrlShortener = () => {
                   {shortUrl}
                 </a>
                 <button
+                  type="button" // Add type="button" to prevent form submission
                   onClick={copyToClipboard}
                   className={`p-2 rounded-full transition-colors duration-200 ease-in-out ${
                     isCopied
@@ -164,4 +166,3 @@ export const UrlShortener = () => {
     </Card>
   );
 };
-
