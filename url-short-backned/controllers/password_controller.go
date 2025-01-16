@@ -7,6 +7,7 @@ import (
 	"url-short-backned/utils"
 )
 
+// CreateProtectedURL handles the creation of a password-protected short URL
 func CreateProtectedURL(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -26,7 +27,7 @@ func CreateProtectedURL(w http.ResponseWriter, r *http.Request) {
 	shortURL := utils.GenerateShortURL()
 
 	// Save URL and password in the model
-	if err := models.SaveURL(shortURL, originalURL, password); err != nil {
+	if err := models.StorePasswordProtectedURL(shortURL, originalURL, password); err != nil {
 		http.Error(w, `{"error":"Failed to save URL"}`, http.StatusInternalServerError)
 		return
 	}
@@ -36,6 +37,7 @@ func CreateProtectedURL(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(responseData)
 }
 
+// RedirectProtectedURL handles the redirection to the original URL after password validation
 func RedirectProtectedURL(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -51,7 +53,7 @@ func RedirectProtectedURL(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate password and retrieve the original URL
-	originalURL, valid := models.GetURL(shortURL, requestData.Password)
+	originalURL, valid := models.RetrieveURLByPassword(shortURL, requestData.Password)
 	if !valid {
 		http.Error(w, `{"error":"Invalid password or URL not found"}`, http.StatusUnauthorized)
 		return
