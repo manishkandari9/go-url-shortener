@@ -26,7 +26,7 @@ func SaveURL(shortURL, originalURL string) error {
 	}
 	if _, err := urlCollection.InsertOne(context.Background(), url); err != nil {
 		log.Printf("Error saving URL: %v", err)
-		return err
+		return err 
 	}
 	return nil
 }
