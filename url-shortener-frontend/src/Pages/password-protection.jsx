@@ -1,52 +1,56 @@
-import React from 'react'
-import { type FormEvent, type ButtonHTMLAttributes, type InputHTMLAttributes, type LabelHTMLAttributes, type HTMLAttributes, type ReactNode, useState } from 'react'
-import { Lock, Copy, Eye, EyeOff, Shield, Clock, BarChart } from 'lucide-react'
+import React, { useState, FormEvent } from 'react';
+import axios from 'axios';
+import { Lock, Copy, Eye, EyeOff, Shield, Clock, BarChart } from 'lucide-react';
 
 export default function PasswordProtection() {
-  const [longURL, setLongURL] = useState('')
-  const [password, setPassword] = useState('')
-  const [shortURL, setShortURL] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
-  const [recentURLs, setRecentURLs] = useState<string[]>([])
+  const [longURL, setLongURL] = useState('');
+  const [password, setPassword] = useState('');
+  const [shortURL, setShortURL] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [recentURLs, setRecentURLs] = useState([]);
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
-    
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       // Validate URL
       if (!isValidUrl(longURL)) {
-        throw new Error('Please enter a valid URL')
+        throw new Error('Please enter a valid URL');
       }
 
       // Validate password
       if (password.length < 6) {
-        throw new Error('Password must be at least 6 characters long')
+        throw new Error('Password must be at least 6 characters long');
       }
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      const newShortURL = `http://localhost:8080/protected-${Date.now()}`
-      setShortURL(newShortURL)
-      setRecentURLs(prev => [newShortURL, ...prev.slice(0, 4)])
-      
-      showToast("Success", "Your password-protected short URL is ready to use!")
-    } catch (error) {
-      showToast("Error", error instanceof Error ? error.message : "Failed to create protected URL", true)
-    } finally {
-      setIsLoading(false)
-    }
-  }
+      // Making POST request to the backend (adjust the URL to match your backend endpoint)
+      const response = await axios.post('http://localhost:8080/create', {
+        url: longURL,
+        password: password,
+      });
 
-  const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text)
-      showToast("Copied", "The URL has been copied to your clipboard.")
+      const newShortURL = response.data.shortUrl;
+      setShortURL(newShortURL);
+      setRecentURLs(prev => [newShortURL, ...prev.slice(0, 4)]);
+
+      showToast('Success', 'Your password-protected short URL is ready to use!');
     } catch (error) {
-      showToast("Error", "Please try copying manually.", true)
+      showToast('Error', error.response?.data?.error || 'Failed to create protected URL', true);
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
+
+  const copyToClipboard = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast('Copied', 'The URL has been copied to your clipboard.');
+    } catch (error) {
+      showToast('Error', 'Please try copying manually.', true);
+    }
+  };
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-purple-50 to-indigo-100 dark:from-gray-900 dark:to-indigo-900 p-4">
@@ -54,7 +58,7 @@ export default function PasswordProtection() {
         <h1 className="text-4xl font-bold text-center text-purple-600 dark:text-purple-400 mb-8">
           Password Protected URLs
         </h1>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <Card className="col-span-1 md:col-span-2 lg:col-span-2">
             <div className="p-6">
@@ -71,13 +75,13 @@ export default function PasswordProtection() {
                     required
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="password">Password</Label>
                   <div className="relative">
                     <Input
                       id="password"
-                      type={showPassword ? "text" : "password"}
+                      type={showPassword ? 'text' : 'password'}
                       placeholder="Enter password for protection"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -93,10 +97,7 @@ export default function PasswordProtection() {
                   </div>
                 </div>
 
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                >
+                <Button type="submit" disabled={isLoading}>
                   {isLoading ? 'Creating...' : 'Create Protected URL'}
                 </Button>
               </form>
@@ -106,10 +107,7 @@ export default function PasswordProtection() {
                   <Label>Your password-protected short URL:</Label>
                   <div className="flex">
                     <Input value={shortURL} readOnly />
-                    <Button
-                      onClick={() => copyToClipboard(shortURL)}
-                      className="ml-2"
-                    >
+                    <Button onClick={() => copyToClipboard(shortURL)} className="ml-2">
                       <Copy className="h-4 w-4" />
                     </Button>
                   </div>
@@ -123,10 +121,7 @@ export default function PasswordProtection() {
               <h3 className="text-xl font-semibold mb-4">Recent Protected URLs</h3>
               <ul className="space-y-2">
                 {recentURLs.map((url, index) => (
-                  <li 
-                    key={index} 
-                    className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-md"
-                  >
+                  <li key={index} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-md">
                     <div className="flex items-center space-x-2">
                       <Lock className="h-4 w-4 text-purple-500 dark:text-purple-400" />
                       <a
@@ -138,10 +133,7 @@ export default function PasswordProtection() {
                         {url}
                       </a>
                     </div>
-                    <Button
-                      onClick={() => copyToClipboard(url)}
-                      className="!p-2"
-                    >
+                    <Button onClick={() => copyToClipboard(url)} className="!p-2">
                       <Copy className="h-4 w-4" />
                     </Button>
                   </li>
@@ -175,125 +167,60 @@ export default function PasswordProtection() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 // Custom Components with Tailwind
-const Button = ({ 
-  children, 
-  className = '', 
-  disabled = false,
-  ...props 
-}: ButtonHTMLAttributes<HTMLButtonElement>) => (
+const Button = ({ children, className = '', disabled = false, ...props }) => (
   <button
-    className={`
-      px-4 py-2 rounded-md font-medium
-      bg-purple-600 text-white
-      hover:bg-purple-700
-      dark:bg-purple-500 dark:hover:bg-purple-600
-      disabled:opacity-50 disabled:cursor-not-allowed
-      transition-colors duration-200
-      focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2
-      ${className}
-    `}
+    className={`px-4 py-2 rounded-md font-medium bg-purple-600 text-white hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${className}`}
     disabled={disabled}
     {...props}
   >
     {children}
   </button>
-)
+);
 
-const Input = ({ 
-  className = '', 
-  ...props 
-}: InputHTMLAttributes<HTMLInputElement>) => (
+const Input = ({ className = '', ...props }) => (
   <input
-    className={`
-      w-full px-3 py-2
-      border border-gray-300 dark:border-gray-600
-      rounded-md
-      bg-white dark:bg-gray-800
-      text-gray-900 dark:text-gray-100
-      placeholder-gray-500 dark:placeholder-gray-400
-      focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2
-      disabled:opacity-50 disabled:cursor-not-allowed
-      transition-colors duration-200
-      ${className}
-    `}
+    className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 ${className}`}
     {...props}
   />
-)
+);
 
-const Label = ({ 
-  children, 
-  className = '', 
-  ...props 
-}: LabelHTMLAttributes<HTMLLabelElement>) => (
-  <label
-    className={`
-      block text-sm font-medium
-      text-gray-700 dark:text-gray-300
-      ${className}
-    `}
-    {...props}
-  >
+const Label = ({ children, className = '', ...props }) => (
+  <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 ${className}`} {...props}>
     {children}
   </label>
-)
+);
 
-const Card = ({ 
-  children, 
-  className = '', 
-  ...props 
-}: HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={`
-      bg-white dark:bg-gray-800
-      shadow-lg rounded-xl overflow-hidden
-      ${className}
-    `}
-    {...props}
-  >
+const Card = ({ children, className = '', ...props }) => (
+  <div className={`bg-white dark:bg-gray-800 shadow-lg rounded-xl overflow-hidden ${className}`} {...props}>
     {children}
   </div>
-)
+);
 
-const FeatureCard = ({ 
-  icon, 
-  title, 
-  description 
-}: { 
-  icon: ReactNode
-  title: string
-  description: string 
-}) => (
+const FeatureCard = ({ icon, title, description }) => (
   <div className="flex items-start space-x-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-    <div className="flex-shrink-0 text-purple-500 dark:text-purple-400">
-      {icon}
-    </div>
+    <div className="flex-shrink-0 text-purple-500 dark:text-purple-400">{icon}</div>
     <div>
-      <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200">
-        {title}
-      </h4>
-      <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-        {description}
-      </p>
+      <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200">{title}</h4>
+      <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{description}</p>
     </div>
   </div>
-)
+);
 
-function showToast(title: string, message: string, isError = false) {
+function showToast(title, message, isError = false) {
   // Simple console.log for demonstration
   // In a real app, you'd implement a proper toast notification system
-  console.log(`${isError ? '❌' : '✅'} ${title}: ${message}`)
+  console.log(`${isError ? '❌' : '✅'} ${title}: ${message}`);
 }
 
-function isValidUrl(url: string) {
+function isValidUrl(url) {
   try {
-    new URL(url)
-    return true
+    new URL(url);
+    return true;
   } catch {
-    return false
+    return false;
   }
 }
-
