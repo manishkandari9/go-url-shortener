@@ -1,89 +1,72 @@
 package models
 
 import (
+	"context"
 	"errors"
 	"fmt"
-	"sync"
+	"url-short-backned/config"
 	"golang.org/x/crypto/bcrypt"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// PasswordProtectedURL struct for storing short URL, original URL, and associated password
+var URLCollection *mongo.Collection = config.Client.Database("urlshortener").Collection("password_protected_urls")
+
 type PasswordProtectedURL struct {
-	ShortURL    string
-	OriginalURL string
-	Password    string // This will store the hashed password
-	CreatedAt   string // Optional field for storing creation date
+	ShortURL    string `bson:"shortURL"`
+	OriginalURL string `bson:"originalURL"`
+	Password    string `bson:"password"`
 }
 
-// Thread-safe in-memory storage for URLs
-var urlStore = struct {
-	sync.RWMutex
-	urls map[string]PasswordProtectedURL
-}{
-	urls: make(map[string]PasswordProtectedURL),
-}
-
-// StorePasswordProtectedURL stores a password-protected short URL in the store with password hashing
+// StorePasswordProtectedURL saves a password-protected URL to the MongoDB database
 func StorePasswordProtectedURL(shortURL, originalURL, password string) error {
-	if password == "" {
-		return errors.New("password is required to protect the URL")
-	}
-
-	// Hash the password before saving it
-	hashedPassword, err := hashPassword(password)
+	// Hash the password before storing
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return fmt.Errorf("error hashing password: %v", err)
+		return err
 	}
 
-	urlStore.Lock()
-	defer urlStore.Unlock()
-
-	// Check if the short URL already exists
-	if _, exists := urlStore.urls[shortURL]; exists {
-		return fmt.Errorf("short URL '%s' already exists", shortURL)
+	// Check if the short URL already exists in the database
+	var existingURL PasswordProtectedURL
+	err = urlCollection.FindOne(context.Background(), bson.M{"shortURL": shortURL}).Decode(&existingURL)
+	if err != mongo.ErrNoDocuments {
+		// If error is not "no documents", return an error indicating the URL already exists
+		return errors.New("short URL already exists")
 	}
 
-	// Save the short URL with the hashed password
-	urlStore.urls[shortURL] = PasswordProtectedURL{
+	// Create a new URL object to insert
+	url := PasswordProtectedURL{
 		ShortURL:    shortURL,
 		OriginalURL: originalURL,
-		Password:    hashedPassword, // Store hashed password
+		Password:    string(hashedPassword),
+	}
+
+	// Insert the new URL into MongoDB
+	_, err = urlCollection.InsertOne(context.Background(), url)
+	if err != nil {
+		return fmt.Errorf("failed to insert URL: %v", err)
 	}
 
 	return nil
 }
 
-// RetrieveURLByPassword retrieves the original URL by validating the password
+// RetrieveURLByPassword retrieves the original URL if the provided password is correct
 func RetrieveURLByPassword(shortURL, password string) (string, bool) {
-	urlStore.RLock()
-	defer urlStore.RUnlock()
-
-	// Check if the short URL exists
-	url, exists := urlStore.urls[shortURL]
-	if !exists {
-		return "", false
-	}
-
-	// Validate the password by comparing the hashed password
-	if !validatePassword(password, url.Password) {
-		return "", false
-	}
-
-	// Return the original URL on successful password match
-	return url.OriginalURL, true
-}
-
-// hashPassword hashes the password using bcrypt
-func hashPassword(password string) (string, error) {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	// Find the URL by short URL
+	var urlData PasswordProtectedURL
+	err := urlCollection.FindOne(context.Background(), bson.M{"shortURL": shortURL}).Decode(&urlData)
 	if err != nil {
-		return "", err
+		if err == mongo.ErrNoDocuments {
+			return "", false // URL not found
+		}
+		return "", false // Other errors
 	}
-	return string(hashedPassword), nil
-}
 
-// validatePassword compares the provided password with the stored hashed password
-func validatePassword(providedPassword, storedHashedPassword string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(storedHashedPassword), []byte(providedPassword))
-	return err == nil
+	// Compare the provided password with the hashed password
+	if err := bcrypt.CompareHashAndPassword([]byte(urlData.Password), []byte(password)); err != nil {
+		return "", false // Password is incorrect
+	}
+
+	// If the password is correct, return the original URL
+	return urlData.OriginalURL, true
 }

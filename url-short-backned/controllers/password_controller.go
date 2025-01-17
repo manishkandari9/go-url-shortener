@@ -7,7 +7,7 @@ import (
 	"url-short-backned/utils"
 )
 
-// CreateProtectedURL handles the creation of a password-protected short URL
+// CreateProtectedURL creates a password-protected URL and stores it in MongoDB
 func CreateProtectedURL(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -16,33 +16,32 @@ func CreateProtectedURL(w http.ResponseWriter, r *http.Request) {
 		Password string `json:"password"`
 	}
 
-	// Decode request body
 	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil || requestData.URL == "" || len(requestData.Password) < 6 {
 		http.Error(w, `{"error":"Invalid request. Ensure URL is valid and password is at least 6 characters long."}`, http.StatusBadRequest)
 		return
 	}
 
-	originalURL := requestData.URL
-	password := requestData.Password
+	// Generate a short URL
 	shortURL := utils.GenerateShortURL()
 
-	// Save URL and password in the model
-	if err := models.StorePasswordProtectedURL(shortURL, originalURL, password); err != nil {
+	// Store the password-protected URL in MongoDB
+	if err := models.StorePasswordProtectedURL(shortURL, requestData.URL, requestData.Password); err != nil {
 		http.Error(w, `{"error":"Failed to save URL"}`, http.StatusInternalServerError)
 		return
 	}
 
-	// Return the short URL
-	responseData := map[string]string{"shortUrl": "http://localhost:8080/" + shortURL}
-	json.NewEncoder(w).Encode(responseData)
+	// Respond with the short URL
+	json.NewEncoder(w).Encode(map[string]string{"shortUrl": "http://localhost:8080/" + shortURL})
 }
 
-// RedirectProtectedURL handles the redirection to the original URL after password validation
+// RedirectProtectedURL redirects to the original URL if the correct password is provided
 func RedirectProtectedURL(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	// Extract short URL and password
+	// Extract the short URL from the request
 	shortURL := r.URL.Path[1:]
+
+	// Get password from request body
 	var requestData struct {
 		Password string `json:"password"`
 	}
@@ -52,7 +51,7 @@ func RedirectProtectedURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Validate password and retrieve the original URL
+	// Retrieve the original URL from the database by matching short URL and password
 	originalURL, valid := models.RetrieveURLByPassword(shortURL, requestData.Password)
 	if !valid {
 		http.Error(w, `{"error":"Invalid password or URL not found"}`, http.StatusUnauthorized)

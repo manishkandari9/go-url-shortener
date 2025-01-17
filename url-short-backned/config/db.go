@@ -35,7 +35,7 @@ func InitMongoClient() error {
 	mongoURI := os.Getenv("MONGODB_URI")
 	if mongoURI == "" {
 		return fmt.Errorf("MongoDB URI is missing from environment variables")
-	}
+	}	
 
 	// Set client options
 	clientOptions := options.Client().ApplyURI(mongoURI).

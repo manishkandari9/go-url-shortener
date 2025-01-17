@@ -5,31 +5,36 @@ import (
 	"net/http"
 	"url-short-backned/config"
 	"url-short-backned/routes"
+
 	"github.com/rs/cors"
 )
 
 func main() {
-	// Initialize MongoDB client (If you need MongoDB functionality)
+	// Initialize MongoDB client
 	err := config.InitMongoClient()
 	if err != nil {
 		log.Fatalf("Error initializing MongoDB: %v", err)
 	}
 	defer config.CloseMongoClient()
 
-	// Set up CORS middleware with allowed origins
+	// Initialize the base router from SetupRoutes
+	baseRouter := routes.SetupRoutes()
+
+	// Initialize password-related routes on the same router
+	routes.InitializePasswordRoutes(baseRouter)
+
+	// Set up CORS middleware
 	corsHandler := cors.New(cors.Options{
-        AllowedOrigins: []string{
-            "http://localhost:3000", // React app (old default port)
-            "http://localhost:5173", // Vite React app (new port)
-        },  // React app URL
-		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"}, // Allowed HTTP methods
-		AllowedHeaders: []string{"Content-Type"}, // Allowed headers
+		AllowedOrigins: []string{
+			"http://localhost:3000",
+			"http://localhost:5173",
+		},
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"},
+		AllowedHeaders: []string{"Content-Type", "Authorization"},
+		AllowCredentials: true,
 	})
 
-	// Set up the router with routes defined in the routes package
-	r := routes.SetupRoutes() // Use the correct function name
-
-	// Start the server with CORS middleware
+	// Start the server with CORS middleware applied to the base router
 	log.Println("Server is running on port 8080...")
-	log.Fatal(http.ListenAndServe(":8080", corsHandler.Handler(r))) // Apply CORS middleware to router
+	log.Fatal(http.ListenAndServe(":8080", corsHandler.Handler(baseRouter)))
 }
