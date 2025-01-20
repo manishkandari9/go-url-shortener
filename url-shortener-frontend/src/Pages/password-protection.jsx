@@ -15,7 +15,7 @@ export default function PasswordProtection() {
 
     try {
       setIsLoading(true);
-      // Validate URL
+      // Validate URLS
       if (!isValidUrl(longURL)) {
         throw new Error('Please enter a valid URL');
       }

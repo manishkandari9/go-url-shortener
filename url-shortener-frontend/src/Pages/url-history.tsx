@@ -3,7 +3,7 @@ import React from 'react'
 import { useState } from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 
-// Mock data for demonstration
+// Mock data for demonstrations
 const urlHistory = [
   { id: 'abc123', shortUrl: 'http://short.ly/abc123', longUrl: 'https://example.com/very/long/url/1', createdAt: '2023-07-01', clicks: 150 },
   { id: 'def456', shortUrl: 'http://short.ly/def456', longUrl: 'https://example.com/very/long/url/2', createdAt: '2023-07-02', clicks: 89 },

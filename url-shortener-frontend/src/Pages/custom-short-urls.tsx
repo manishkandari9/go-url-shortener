@@ -13,7 +13,7 @@ export default function CustomShortURLs() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    // Simulate API call
+    // Simulate API calls
     await new Promise(resolve => setTimeout(resolve, 1000))
     const newShortURL = `http://localhost:8080/${customAlias}`
     setShortURL(newShortURL)
@@ -178,7 +178,6 @@ function FeatureCard({ icon, title, description }: { icon: React.ReactNode; titl
 }
 
 function toast({ title, description }: { title: string; description: string }) {
-  // Implement your toast notification logic here
   console.log(`${title}: ${description}`)
 }
 
