@@ -25,7 +25,7 @@ export default function PasswordProtection() {
         throw new Error('Password must be at least 6 characters long');
       }
 
-      // Making POST request to the backend (adjust the URL to match your backend endpoint)
+      // Making POST request to the backend 
       const response = await axios.post('http://localhost:8080/create', {
         url: longURL,
         password: password,
