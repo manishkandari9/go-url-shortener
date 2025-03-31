@@ -12,6 +12,6 @@ func InitializePasswordRoutes(router *mux.Router) {
 	router.HandleFunc("/{shortURL}", controllers.RedirectProtectedURL).Methods("POST")
 
 	router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, `{"error":"Route not found"}`, http.StatusNotFound)
+		http.Error(w, `{"error":"Route not foundd"}`, http.StatusNotFound)
 	})
 }
